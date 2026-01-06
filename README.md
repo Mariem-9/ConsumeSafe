@@ -124,6 +124,13 @@ http://localhost:30703/check/Coca-Cola
 ```
 ![API Response](screenshots/07_consumeSafe_k8s_status.png)
 ![API Response](screenshots/08_api_test_cocacola.png)
+
+6. Commit to Github
+```
+git add .
+git commit -m "Step 2: Dockerized FastAPI, Kubernetes deployment and service YAMLs"
+git push
+```
 #### Project structure
 ```
 ConsumeSafe/
@@ -140,3 +147,58 @@ ConsumeSafe/
 🚨Docker Stuck in Starting Mode : https://youtu.be/dYiPms0xnIE?si=VXQ1LWYP2FsgFSue 
 
 > Backend running in Docker and Kubernetes, accessible for testing.
+
+### Step 3: CI/CD + Security Hardening + Optional AI : Automate deployment, secure the app, and optionally add AI for recommendations.
+1. Security Hardening
+```
+docker scout quickview mariembenamor/consumesafe:latest
+```
+Scan Results Summary : 
+* Total vulnerabilities: 22 in 11 packages
+* Severity:
+    * 0 Critical ✅
+    * 0 High ✅
+    * 2 Medium ⚠️
+    * 20 Low (mostly older libraries)
+* Medium CVEs to note:
+    * tar 1.35+dfsg-3.1 → CVE-2025-45582
+    * pip 24.0 → CVE-2025-8869 (fix in pip 25.3)
+* Base image: python:3.11-slim
+* Scout recommendation: Upgrade to python:3.12-slim for latest patches
+* Most of the Low CVEs are in Debian packages (glibc, coreutils, openssl, etc.) — usually acceptable for DevSecOps demo projects
+
+Recommended Security Hardening Steps : 
+* Update your Dockerfile to install the latest pip
+* Upgrade base image
+
+Rebuild and push hardened image : 
+```
+docker build -t mariembenamor/consumesafe:latest .
+docker push mariembenamor/consumesafe:latest
+```
+2.  CI/CD : GitHub Actions : Create .github/workflows/ci-cd.yaml
+```
+cd "/mnt/c/Users/user/Documents/15 H/DevSecOps/ConsumeSafe"
+mkdir -p .github/workflows
+nano .github/workflows/ci-cd.yml
+```
+ Commit to Github
+```
+git add .
+git commit -m "To test: CI/CD : GitHub Actions : Create .github/workflows/ci-cd.yaml"
+git push
+```
+
+3. Optional AI feature
+
+Simple recommendation improvement:
+
+* Rank alternatives by popularity or availability
+* Use scikit-learn for a simple model if desired
+
+4. Testing & Documentation
+
+Test all endpoints
+Prepare README + architecture diagram
+
+> Full project ready, optionally CI/CD + AI, secure and deployed.
