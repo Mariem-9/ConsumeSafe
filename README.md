@@ -1,5 +1,14 @@
 # Project: ConsumeSafe Application
 
+## Table of Contents
+1. [Objective](#objective)
+2. [Key Features](#key-features)
+3. [Tech Stack](#tech-stack)
+4. [Step 1: Backend + Core Functionality](#step-1-backend--core-functionality)
+5. [Step 2: Dockerization + Kubernetes Deployment](#step-2-dockerization--kubernetes-deployment)
+6. [Step 3: CI/CD + Security Hardening + Optional AI](#step-3-cicd--security-hardening--optional-ai)
+
+
 ## Objective:
 Build an application to help users make safer consumption choices by checking if products are on a boycott list.
 ## Key Features:
@@ -148,7 +157,7 @@ ConsumeSafe/
 
 > Backend running in Docker and Kubernetes, accessible for testing.
 
-### Step 3: CI/CD + Security Hardening + Optional AI : Automate deployment, secure the app, and optionally add AI for recommendations.
+### Step 3: CI/CD + Security Hardening + AI : Automate deployment, secure the app, and add AI for recommendations.
 1. Security Hardening
 ```
 docker scout quickview mariembenamor/consumesafe:latest
@@ -176,29 +185,69 @@ Rebuild and push hardened image :
 docker build -t mariembenamor/consumesafe:latest .
 docker push mariembenamor/consumesafe:latest
 ```
+The final image contains:
+* 0 Critical
+* 0 High
+* 1 Medium (Debian tar – no fix available upstream)
+* Low CVEs are accepted as OS-level risks
 2.  CI/CD : GitHub Actions : Create .github/workflows/ci-cd.yaml
 ```
 cd "/mnt/c/Users/user/Documents/15 H/DevSecOps/ConsumeSafe"
 mkdir -p .github/workflows
 nano .github/workflows/ci-cd.yml
 ```
+Create Docker Hub Access Token : Docker Hub → Profile → Account Settings → Security → New Access Token → Name: github-actions → Permissions: Read, Write
+Add secrets in GitHub : GitHub repository → Settings → Secrets and variables → Actions → New repository secret → Add:
+Name	           Value
+DOCKER_USERNAME	  mariembenamor
+DOCKER_PASSWORD	  (paste token here)
+
  Commit to Github
 ```
 git add .
 git commit -m "To test: CI/CD : GitHub Actions : Create .github/workflows/ci-cd.yaml"
 git push
 ```
+This pipeline does full DevSecOps automation:
+* Push code → triggers workflow
+* Build a Docker image
+* Scan it for vulnerabilities
+* Push it to Docker Hub
 
-3. Optional AI feature
-
-Simple recommendation improvement:
-
-* Rank alternatives by popularity or availability
-* Use scikit-learn for a simple model if desired
-
-4. Testing & Documentation
-
-Test all endpoints
-Prepare README + architecture diagram
-
+3. AI feature : Simple recommendation improvement:
+If a user’s product is on the boycott list:
+* Highlight it
+* Suggest alternative Tunisian products
+The recommendation feature compares the product name you enter to all other product names using text similarity. It then returns the top 3 most similar products, excluding the one you typed
+🚨 Update requirements.txt to include: scikit-learn>=1.5.0
+🚨 Update Dockerfile to install new dependencies:
+```
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+docker build -t mariembenamor/consumesafe:latest .
+```
+Or Test locally (outside Docker): 
+```
+pip install --no-cache-dir -r requirements.txt
+venv\Scripts\activate
+pip install scikit-learn
+pip freeze > requirements.txt
+uvicorn app:app --reload 
+```
+Open:
+```
+http://127.0.0.1:8000/recommend?product_name=Pepsi
+http://127.0.0.1:8000/recommend?product_name=Apple
+```
+✨ For ConsumeSafe project, the current recommendation method is very basic. It only looks at text similarity between product names, which means:
+* It doesn’t consider availability, popularity, or category.
+* “Coca-Cola” might get “Pepsi” just because the letters are similar — which is fine, but for local alternatives, it might miss “Jus Vital” unless the name is close.
+* For boycotted products, it doesn’t prioritize safe Tunisian alternatives automatically.
+💡Better approach : Add a category column so recommendations first suggest the official alternative, then other products from the same category, making them relevant and safe.
+4. Commit to Github
+```
+git add .
+git commit -m "Step 3: CI/CD + Security Hardening + AI "
+git push
+```
 > Full project ready, optionally CI/CD + AI, secure and deployed.
