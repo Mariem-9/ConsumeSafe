@@ -36,12 +36,12 @@ jobs:
       run: |
         docker push mariembenamor/consumesafe:latest
 
-    - name: Setup Kubeconfig
-      run: |
-        mkdir -p $HOME/.kube
-        echo "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
+    # - name: Setup Kubeconfig
+    #   run: |
+    #     mkdir -p $HOME/.kube
+    #     echo "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
 
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
+    # - name: Deploy to Kubernetes
+    #   run: |
+    #     kubectl apply -f deployment.yaml
+    #     kubectl apply -f service.yaml
