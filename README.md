@@ -66,7 +66,15 @@ ConsumeSafe/
 ├── app.py
 ├── boycott_list.csv
 ├── requirements.txt
+├── screenshots/
 └── venv/
 ```
+#### Screenshot of API Response
+
+![API Response](screenshots/01_homepage_api_running.png)
+![API Response](screenshots/02_check_cocacola_boycott.png)
+![API Response](screenshots/03_check_benjerrys_ok.png)
+![API Response](screenshots/04_check_delice_boycott.png)
+
 
 > Python backend running locally, checking products against boycott list. 
