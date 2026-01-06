@@ -8,9 +8,9 @@ Build an application to help users make safer consumption choices by checking if
 ## Tech Stack:
 * Backend: Python (for APIs and logic)
 * Version Control: Git
-* CI/CD: Any Continuous Integration server of your choice (e.g., GitHub Actions, GitLab CI, Jenkins)
 * Containerization: Docker image for deployment
 * Orchestration: Kubernetes (k8s) cluster deployment
+* CI/CD: Any Continuous Integration server of your choice (e.g., GitHub Actions, GitLab CI, Jenkins)
 * Security: Harden the application and infrastructure
 * AI Integration: Optional; can be used to improve product recommendations or automate boycott list updates
 ## Deliverables:
@@ -78,3 +78,65 @@ ConsumeSafe/
 
 
 > Python backend running locally, checking products against boycott list. 
+
+### Step 2: Dockerization + Kubernetes Deployment : Containerize the app and deploy it.
+1. Dockerize the FastAPI app : create a Dockerfile
+2. Build and run Docker image
+```
+docker build -t consumesafe .
+docker run -p 8000:8000 consumesafe
+```
+Open:
+```
+http://127.0.0.1:8000/check/Coca-Cola
+
+```
+![API Response](screenshots/05_docker_build_run.png)
+
+3. Push to Docker Hub : 
+Open WSL:
+```
+cd /mnt/c/Users/user/Documents/15\ H/DevSecOps/ConsumeSafe <--
+```
+```
+docker login                                                   # Log in to Docker Hub from terminal <--
+docker tag consumesafe mariembenamor/consumesafe:latest        # Tag local image
+docker push mariembenamor/consumesafe:latest                   # Push the image to Docker Hub
+docker run -p 8000:8000 mariembenamor/consumesafe:latest       # docker run -p 8000:8000 mariembenamor/consumesafe:latest <--
+```
+Go to: https://hub.docker.com/r/mariembenamor/consumesafe 
+![API Response](screenshots/06_dockerhub_image_verified.png)
+
+4. Prepare Kubernetes deployment : create 2 YAML files: Deployment + Service
+5. Deploy to Kubernetes
+```
+kubectl cluster-info
+kubectl get nodes
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl get pods
+kubectl get services
+```
+Open:
+```
+http://localhost:30703/check/Coca-Cola
+
+```
+![API Response](screenshots/07_consumeSafe_k8s_status.png)
+![API Response](screenshots/08_api_test_cocacola.png)
+#### Project structure
+```
+ConsumeSafe/
+│
+├── app.py
+├── boycott_list.csv
+├── requirements.txt
+├── screenshots/
+├── Dockerfile
+├── deployment.yaml
+├── service.yaml
+└── venv/
+```
+🚨Docker Stuck in Starting Mode : https://youtu.be/dYiPms0xnIE?si=VXQ1LWYP2FsgFSue 
+
+> Backend running in Docker and Kubernetes, accessible for testing.

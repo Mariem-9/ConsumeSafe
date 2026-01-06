@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumesafe-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumesafe
+  template:
+    metadata:
+      labels:
+        app: consumesafe
+    spec:
+      containers:
+      - name: consumesafe
+        image: mariembenamor/consumesafe:latest  # Docker Hub image
+        ports:
+        - containerPort: 8000
