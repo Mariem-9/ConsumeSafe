@@ -35,8 +35,13 @@ jobs:
     - name: Push Docker image
       run: |
         docker push mariembenamor/consumesafe:latest
-# Optional: Deploy to Kubernetes
-      # - name: Deploy to Kubernetes
-      #   run: |
-      #     kubectl apply -f deployment.yaml
-      #     kubectl apply -f service.yaml
+
+    - name: Setup Kubeconfig
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
