@@ -3,21 +3,21 @@
 ## Objective:
 Build an application to help users make safer consumption choices by checking if products are on a boycott list.
 ## Key Features:
-    * Product Check: User inputs a product, app checks if it’s on a boycott list.
-    * Suggestions: If the product is boycotted, highlight it and suggest alternative Tunisian products.
+* Product Check: User inputs a product, app checks if it’s on a boycott list.
+* Suggestions: If the product is boycotted, highlight it and suggest alternative Tunisian products.
 ## Tech Stack:
-    * Backend: Python (for APIs and logic)
-    * Version Control: Git
-    * CI/CD: Any Continuous Integration server of your choice (e.g., GitHub Actions, GitLab CI, Jenkins)
-    * Containerization: Docker image for deployment
-    * Orchestration: Kubernetes (k8s) cluster deployment
-    * Security: Harden the application and infrastructure
-    * AI Integration: Optional; can be used to improve product recommendations or automate boycott list updates
+* Backend: Python (for APIs and logic)
+* Version Control: Git
+* CI/CD: Any Continuous Integration server of your choice (e.g., GitHub Actions, GitLab CI, Jenkins)
+* Containerization: Docker image for deployment
+* Orchestration: Kubernetes (k8s) cluster deployment
+* Security: Harden the application and infrastructure
+* AI Integration: Optional; can be used to improve product recommendations or automate boycott list updates
 ## Deliverables:
-    * Working application deployed in Kubernetes
-    * Dockerized microservices (if applicable)
-    * Secure pipelines and deployment
-    * Optional AI features for smarter recommendations
+* Working application deployed in Kubernetes
+* Dockerized microservices (if applicable)
+* Secure pipelines and deployment
+* Optional AI features for smarter recommendations
 
 ### Step 1: Backend + Core Functionality : Have a working API to check boycott products and suggest alternatives.
 1. Create the Github repository named ConsumeSafe then Clone it on PC
@@ -38,7 +38,27 @@ pip freeze > requirements.txt           # Saved in requirements.txt
 ```
 4. Create boycott_list.csv with 100 products and mixed statuses (Boycott / Ok) and Tunisian alternatives where needed.
 5. Create FastAPI backend (app.py)
+6. Run the backend locally 
+```
+uvicorn app:app --reload                # Venv must be Activated 
+```
+Open:
+```
+http://127.0.0.1:8000
 
+```
+Then test : 
+```
+http://127.0.0.1:8000/check/Coca-Cola
+http://127.0.0.1:8000/check/Ben&Jerrys
+http://127.0.0.1:8000/check/Délice
+```
+7. Commit to Github
+```
+git add .
+git commit -m "Step 1: FastAPI backend with boycott check"
+git push
+```
 #### Project structure
 ```
 ConsumeSafe/
