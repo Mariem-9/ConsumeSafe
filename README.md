@@ -7,6 +7,7 @@
 4. [Step 1: Backend + Core Functionality](#step-1-backend--core-functionality)
 5. [Step 2: Dockerization + Kubernetes Deployment](#step-2-dockerization--kubernetes-deployment)
 6. [Step 3: CI/CD + Security Hardening + Optional AI](#step-3-cicd--security-hardening--optional-ai)
+7. [Step 4: Web Frontend & User Interface](#step-4-web-frontend--user-interface--add-a-simple-web-frontend-that-makes-consumesafe-platform-visible)
 
 
 ## Objective:
@@ -290,7 +291,8 @@ http://127.0.0.1:8000/
 ![API Response](screenshots/09_BoycottStatus_&_AIAlternatives.png)
 ![API Response](screenshots/10_SafeProduct_Status.png)
 🚨Since we added frontend files (templates/ and static/), we must also copy them into the Docker image.
-4. Commit to Github
+
+Next : Commit to Github
 ```
 git add .
 git commit -m "Step 4: Web Frontend & User Interface "
