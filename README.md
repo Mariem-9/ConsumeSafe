@@ -251,3 +251,48 @@ git commit -m "Step 3: CI/CD + Security Hardening + AI "
 git push
 ```
 > Full project ready, optionally CI/CD + AI, secure and deployed.
+
+### Step 4: Web Frontend & User Interface : add a simple web frontend that makes ConsumeSafe platform visible
+To move beyond a simple API, a modern user interface was built to provide a better user experience.
+UI/UX Improvements: Implemented a clean "Inter" font-based design.
+* Added Dynamic Cards: Red for Boycott (🚫), Green for Safe (✅).
+* Loading States: Integrated a CSS spinner for real-time feedback during AI processing.
+* Responsive Grid: Alternatives are displayed in a clean, hover-animated grid.
+#### Project structure
+```
+ConsumeSafe/
+│
+├── app.py
+├── boycott_list.csv
+├── requirements.txt
+├── screenshots/
+├── static/
+│    └── style.css
+├── templates/
+│    └── index.html
+├── Dockerfile
+├── deployment.yaml
+├── service.yaml
+└── venv/
+```
+```
+cd C:\Users\user\Documents\15 H\DevSecOps
+cd ConsumeSafe
+venv\Scripts\activate
+pip install jinja2
+pip freeze > requirements.txt
+uvicorn app:app --reload
+```
+Open:
+```
+http://127.0.0.1:8000/
+```
+![API Response](screenshots/09_BoycottStatus_&_AIAlternatives.png)
+![API Response](screenshots/10_SafeProduct_Status.png)
+🚨Since we added frontend files (templates/ and static/), we must also copy them into the Docker image.
+4. Commit to Github
+```
+git add .
+git commit -m "Step 4: Web Frontend & User Interface "
+git push
+```

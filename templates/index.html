@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsumeSafe | Shop Consciously</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🛒 ConsumeSafe</div>
+            <p class="subtitle">Shop consciously. Discover local Tunisian alternatives instantly.</p>
+        </header>
+
+        <div class="search-section">
+            <div class="input-group">
+                <input id="product" type="text" placeholder="Enter product name (e.g. Coca-Cola)" onkeypress="if(event.key === 'Enter') check()">
+                <button onclick="check()">Check Status</button>
+            </div>
+        </div>
+
+        <div id="result" class="result-card hidden"></div>
+
+        <div id="recommendations-wrapper" class="hidden">
+            <div class="divider"></div>
+            <h3>✨ Recommended Local Alternatives</h3>
+            <div id="recommendations" class="recommendations-grid"></div>
+        </div>
+    </div>
+
+<script>
+async function check() {
+    const productInput = document.getElementById("product");
+    const product = productInput.value.trim();
+    const result = document.getElementById("result");
+    const wrapper = document.getElementById("recommendations-wrapper");
+    const recsContainer = document.getElementById("recommendations");
+
+    if (!product) return;
+
+    // Reset and Show Loading
+    recsContainer.innerHTML = ""; 
+    wrapper.classList.add("hidden");
+    result.classList.remove("hidden", "good", "bad");
+    result.innerHTML = `<div class="spinner"></div> Checking database...`;
+
+    try {
+        const checkRes = await fetch(`/check/${encodeURIComponent(product)}`);
+        const data = await checkRes.json();
+
+        result.innerHTML = ""; // Clear spinner
+
+        if (data.status === "Boycott") {
+            result.innerHTML = `
+                <div class="status-icon">🚫</div>
+                <div>
+                    <strong>${data.product}</strong> is on the boycott list.<br>
+                    <small>Primary alternative: ${data.alternative}</small>
+                </div>`;
+            result.classList.add("bad");
+
+            // Fetch and show recs
+            const recRes = await fetch(`/recommend?product_name=${encodeURIComponent(product)}`);
+            const recData = await recRes.json();
+
+            if (recData.recommendations.length > 0) {
+                wrapper.classList.remove("hidden");
+                recData.recommendations.forEach(p => {
+                    const card = document.createElement("div");
+                    card.className = "rec-card";
+                    card.innerHTML = `<span>🇹🇳</span> ${p}`;
+                    recsContainer.appendChild(card);
+                });
+            }
+
+        } else if (data.status === "OK") {
+            result.innerHTML = `
+                <div class="status-icon">✅</div>
+                <div><strong>${data.product}</strong> is safe to buy!</div>`;
+            result.classList.add("good");
+        } else {
+            result.innerHTML = `⚠️ Product not found in our database.`;
+            result.classList.add("neutral");
+        }
+
+    } catch (err) {
+        result.innerHTML = "❌ Connection error. Please try again.";
+        result.classList.add("bad");
+    }
+}
+</script>
+</body>
+</html>

@@ -1,8 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import pandas as pd
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+app = FastAPI()
+
+# --- 🛠 SETUP FOR FRONTEND ---
+# Mount static files (CSS/JS) and templates (HTML)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # 1️⃣ Load boycott CSV
 try:
@@ -30,23 +40,34 @@ except Exception as e:
     print("Error loading CSV:", e)
     products = []  # fallback if CSV fails
 
+# Train AI ONCE
+vectorizer = TfidfVectorizer()
+product_vectors = vectorizer.fit_transform(products)
+
 def recommend_alternatives(user_product):
-    # Use TF-IDF to compare product names from CSV
-    vectorizer = TfidfVectorizer().fit_transform(products)
-    user_vec = TfidfVectorizer().fit(products).transform([user_product])
-    scores = cosine_similarity(user_vec, vectorizer)
-    ranked = sorted(zip(products, scores[0]), key=lambda x: -x[1])
-    
-    # Exclude the original product
-    recommendations = [p for p, s in ranked if p.lower() != user_product.lower()]
-    return recommendations[:3]  # top 3 alternatives
+    user_vec = vectorizer.transform([user_product])
+    scores = cosine_similarity(user_vec, product_vectors)[0]
 
+    # Rank products by similarity
+    ranked = sorted(zip(products, scores), key=lambda x: -x[1])
 
-app = FastAPI()
+    # Filter out the original product and any boycotted ones
+    safe_recs = [
+        p for p, s in ranked
+        if p.lower() != user_product.lower() and 
+           data[data["product"].str.lower() == p.lower()].iloc[0]["status"] != "Boycott"
+    ]
 
-@app.get("/")
-def home():
-    return {"message": "ConsumeSafe API is running"}
+    return safe_recs[:3]  # top 3 safe alternatives
+
+# @app.get("/")
+# def home():
+#     return {"message": "ConsumeSafe API is running"}
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    # This renders the index.html file from the /templates folder
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/check/{product}")
 def check_product(product: str):
