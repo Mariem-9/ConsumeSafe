@@ -8,6 +8,7 @@
 5. [Step 2: Dockerization + Kubernetes Deployment](#step-2-dockerization--kubernetes-deployment)
 6. [Step 3: CI/CD + Security Hardening + Optional AI](#step-3-cicd--security-hardening--optional-ai)
 7. [Step 4: Web Frontend & User Interface](#step-4-web-frontend--user-interface--add-a-simple-web-frontend-that-makes-consumesafe-platform-visible)
+8. [Step 5: Secure FastAPI app with HTTPS](#step-5-secure-fastapi-app-with-https--setup-for-fastapi--docker--nginx--https)
 
 
 ## Objective:
@@ -253,7 +254,7 @@ git push
 ```
 > Full project ready, optionally CI/CD + AI, secure and deployed.
 
-### Step 4: Web Frontend & User Interface : add a simple web frontend that makes ConsumeSafe platform visible
+### Step 4: Web Frontend & User Interface : Add a simple web frontend that makes ConsumeSafe platform visible
 To move beyond a simple API, a modern user interface was built to provide a better user experience.
 UI/UX Improvements: Implemented a clean "Inter" font-based design.
 * Added Dynamic Cards: Red for Boycott (🚫), Green for Safe (✅).
@@ -296,5 +297,79 @@ Next : Commit to Github
 ```
 git add .
 git commit -m "Step 4: Web Frontend & User Interface "
+git push
+```
+> A modern, responsive frontend showing boycotted products in red, safe AI-recommended alternatives in green, with official Tunisian alternatives highlighted, fully working locally and inside Docker.
+### Step 5: Secure FastAPI app with HTTPS : Setup for FastAPI + Docker + Nginx + HTTPS
+1. Add an nginx/ folder
+#### Project structure
+```
+ConsumeSafe/
+│
+├── app.py
+├── boycott_list.csv
+├── requirements.txt
+├── templates/
+├── static/
+├── Dockerfile
+├── nginx/
+│   ├── default.conf
+│   ├── cert.pem     # self-signed cert for local
+│   └── key.pem      # private key for local
+├── deployment.yaml
+├── service.yaml
+└── ...
+```
+2. Generate local SSL certificates (for dev): Run Git Bash as Administrator
+```
+cd "/c/Users/user/Documents/15 H/DevSecOps/ConsumeSafe/nginx"
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
+```
+![API Response](screenshots/11_CertificateDetails_localdevelopment.png)
+> we ran OpenSSL and started generating a self-signed certificate (cert.pem) and private key (key.pem) for local HTTPS.
+then we  entered the Distinguished Name (DN) details, using localhost for the Common Name.
+3. Nginx Configuration
+* Created nginx/default.conf to act as a reverse proxy:
+    * Redirects HTTP → HTTPS
+    * Proxies HTTPS requests to FastAPI backend
+    * Serves static files
+* Nginx will handle SSL termination so FastAPI itself doesn’t need HTTPS.
+4. Docker Setup
+* we already have a FastAPI Dockerfile for the app.
+* Added nginx/Dockerfile to run Nginx with the SSL certs.
+5. Use Docker Compose to run both FastAPI and Nginx together with HTTPS.
+```
+ConsumeSafe/
+│
+├── app.py
+├── boycott_list.csv
+├── requirements.txt
+├── templates/
+├── static/
+├── Dockerfile          # FastAPI app
+├── nginx/
+│   ├── Dockerfile      # Nginx image
+│   ├── default.conf    # Nginx config
+│   ├── cert.pem        # SSL certificate
+│   └── key.pem         # SSL key
+├── docker-compose.yml  
+├── deployment.yaml
+├── service.yaml
+└── ...
+```
+```
+cd "/c/Users/user/Documents/15 H/DevSecOps/ConsumeSafe"
+docker-compose up --build
+```
+Then Open :
+```
+https://localhost
+```
+![API Response](screenshots/12_local_HTTPS_testing.png)
+
+6. Commit to Github
+```
+git add .
+git commit -m "Step 5: Secure FastAPI app with HTTPS"
 git push
 ```

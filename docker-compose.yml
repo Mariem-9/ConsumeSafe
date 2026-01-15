@@ -1,0 +1,16 @@
+services:
+  fastapi:
+    build: .
+    container_name: consumesafe-app
+    restart: always
+
+  nginx:
+    build:
+      context: ./nginx   # Make sure this folder exists
+    container_name: consumesafe-nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      - fastapi
+    restart: always
